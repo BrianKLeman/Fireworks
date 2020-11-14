@@ -1,5 +1,4 @@
 #include "Particles.h"
-#include "Trace.h"
 float mousex = 0, mousey = 0;
 StructParticle* mParticles = nullptr;
 Rocket* mRockets = nullptr;
@@ -220,7 +219,6 @@ void Update( float dt )
 
 			for(int j = 0; j < trails; ++j)
 			{				
-				TRACE( "Calc Index CALC_ROCKET_TRAIL_INDEX(%i, %i) = %i \n\r", i, j, CALC_ROCKET_TRAIL_INDEX(i, j));
 				Rocket* rocket = &(mRockets[CALC_ROCKET_TRAIL_INDEX(i, j)]);
 				rocket->mCount = particlesPerRocket;
 				rocket->mNextParticleIndex = rocket->mStart = CALC_TRAIL_INDEX(i,j);

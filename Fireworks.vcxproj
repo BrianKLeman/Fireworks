@@ -161,7 +161,6 @@
     <ClCompile Include="effect\HLSLEffect.cpp" />
     <ClCompile Include="effect\HLSLEffectWithUtilities.cpp" />
     <ClCompile Include="High Performance Timer\HighPerformanceTimer.cpp" />
-    <ClCompile Include="Trace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Particle System\DebugCSV.h" />
@@ -175,7 +174,6 @@
     <ClInclude Include="Particles.h" />
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Trace.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bitmap1.bmp" />

@@ -14,10 +14,14 @@
     <ProjectName>Fireworks</ProjectName>
     <ProjectGuid>{26D7935A-25A7-41BB-B3AA-BCF54FD07632}</ProjectGuid>
     <RootNamespace>Test4</RootNamespace>
-    <SccProjectName>SAK</SccProjectName>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -157,7 +161,6 @@
     <ClCompile Include="effect\HLSLEffect.cpp" />
     <ClCompile Include="effect\HLSLEffectWithUtilities.cpp" />
     <ClCompile Include="High Performance Timer\HighPerformanceTimer.cpp" />
-    <ClCompile Include="Trace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Particle System\DebugCSV.h" />
@@ -167,13 +170,10 @@
     <ClInclude Include="Cube\Box.h" />
     <ClInclude Include="Cube\colour_enum.h" />
     <ClInclude Include="Cube\MathLogger.h" />
-    <ClInclude Include="Cube\RubikCube.h" />
     <ClInclude Include="Cube\Utility.h" />
     <ClInclude Include="Particles.h" />
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SpritePacker.h" />
-    <ClInclude Include="Trace.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bitmap1.bmp" />

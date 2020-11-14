@@ -17,7 +17,6 @@
 #include "effect/HLSLEffect.h"
 #include "PostProcessing.h"
 #include <ctime>
-#include "Trace.h"
 
 #if defined(DEBUG) | defined(_DEBUG)
 #include <DxErr.h>
@@ -667,10 +666,7 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				gFireWorksGlowStrength -= delta;
 			}
 
-			if (wParam == VK_SPACE)
-			{
-				TRACE( "Fireworks strength (%f) radius (%f) \n\r Fire strength (%f) radius (%f)", gFireWorksGlowStrength, gFireWorksGlowRadius, gFireGlowStrength, gFireWorksGlowRadius);
-			}
+			
 		}
 	}
 
