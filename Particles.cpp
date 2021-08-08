@@ -1,48 +1,11 @@
 #include "Particles.h"
+#include "./Shared/Timer.h"
+#include "FireworksApp.h"
 float mousex = 0, mousey = 0;
 StructParticle* mParticles = nullptr;
 Rocket* mRockets = nullptr;
 
-#include "High Performance Timer/HighPerformanceTimer.h"
-StructParticle::StructParticle() :p({ 0.f }), v({ 0.f }), colour( 255.f, 255.f, 255.f, 255.f ), mLifeTime(1.f), mAlive(false), mTime(0.f), ay(PARTICLE_GRAVITY_FACTOR)
-{
-	D3DXVECTOR4 colourOne, colourTwo, colourThree, colourFour, colourFive;
-	colourOne.x = 232; colourOne.y = 92; colourOne.z = 0; colourOne.w = 255;;
-	colourTwo.x = 181; colourTwo.y = 0; colourTwo.z = 0; colourTwo.w = 255;
-	colourThree.x = 255; colourThree.y = 0; colourThree.z = 0; colourThree.w = 255;
-	colourFour.x = 0; colourFour.y = 0; colourFour.z = 0; colourFour.w = 255;
-	colourFive.x = 0; colourFive.y = 0; colourFive.z = 0; colourFive.w = 0;
-	mColours.push_back(colourOne); mColours.push_back(colourTwo); 
-	mColours.push_back(colourThree); mColours.push_back(colourFour);
-	mColours.push_back(colourFive); mColours.push_back(colourFive);
-	mGradientStopCount = short(mColours.size());
-}
-
-StructParticle::StructParticle( StructParticle& sp ) : colour(sp.colour),
-	 p(sp.p), v(sp.v), ay(sp.ay), mLifeTime(sp.mLifeTime), mTime(sp.mTime), mAlive(sp.mAlive),
-	mGradientStopCount(sp.mGradientStopCount)
-{
-	for(size_t z = 0; z < sp.mColours.size(); ++z)
-		mColours.push_back( mColours[z]);
-}
-
-Rocket::Rocket( TIndex start, TIndex count ) :  mStart(start), mCount(count), StructParticle(), mNextParticleIndex(start)
-{
-
-}
-
-Rocket::Rocket()
-	: StructParticle()
-{
-
-}
-
-Rocket::Rocket( Rocket& cpy ) : mStart(cpy.mStart), mCount(cpy.mCount), mNextParticleIndex(cpy.mNextParticleIndex), StructParticle(cpy)
-{
-
-}
-
-void UpdateParticles( TTimeUnit step )
+void UpdateParticlesColours( float step )
 {
 	StructParticle* p = mParticles;
 
@@ -51,10 +14,10 @@ void UpdateParticles( TTimeUnit step )
 	{
 		// Position
 		p->p += p->v*step; // Move
-		p->p.y += -0.5f*p->ay*step*step;;	// Accelerate
+		p->p += -0.5f*p->a*step*step;;	// Accelerate
 
 		// Vertical speed.
- 		p->v.y -= p->ay*step; 
+ 		p->v -= p->a*step; 
 
 		// Determine if life has stopped.
 		p->mTime += step;
@@ -78,12 +41,12 @@ void UpdateParticle( Rocket* rocket )
 {
 	StructParticle* particle = &(mParticles[rocket->mNextParticleIndex]);
 	particle->p = rocket->p;
-	particle->v.x = RAN(20); 
+	particle->v.x = 0.f;// RAN(20);
 	particle->v.y = 0.f;
 	particle->mLifeTime = 1.0f + RAN(0.5f);
 	particle->mTime = 0.f;
 	particle->mAlive = true;
-
+	
 	if (rocket->mGradientStopCount > 0)
 	{
 		particle->mColours = rocket->mColours;
@@ -101,8 +64,8 @@ void ResetRocket( Rocket* rocket )
 	rocket->p.y = 0; // Start at the bottom of the viewport.
 
 	// Determine InitialVelocity of the rocket.
-	rocket->v.y = -(mousey - screenHeight);
-	rocket->v.x = (mousex - screenWidth/2.f);
+	rocket->v.y = -(mousey - FireworksApp::screenHeight);
+	rocket->v.x = (mousex - FireworksApp::screenWidth/2.f);
 	rocket->mTime = 0; // Born.
 	rocket->colour = D3DXVECTOR4(255.f, 255.f,255.f,255.f); // Starts white.
 	rocket->mLifeTime = RAN(5); // Random lifetime < 5 seconds.
@@ -130,36 +93,29 @@ void UpdateFireParticle( Rocket* rocket )
 	particle->p.y = rocket->p.y  + 20.f -RAN(60);
 	particle->v.x = 50.f - (float)0.3f*100.f/255.f; 
 	particle->v.y = ((float)0.3f)*80.f / 255.f;
-	particle->ay = -PARTICLE_GRAVITY_FACTOR;
 	particle->mLifeTime = 0.5f + (RAN(2.f));
 	particle->mTime = 0.f;
 	particle->mAlive = true;	
 	rocket->mNextParticleIndex++;	
 }
 
-void UpdateRockets( int rocketIndex, TTimeUnit step, bool restart /*= true*/ )
+void UpdateRockets( int rocketIndex, float step, bool restart /*= true*/ )
 {
 	Rocket* rocket = &(mRockets[rocketIndex]);
-	const int iterations = 3;
-	step /= float(iterations);
 
-	int i = 0;
-	while(i<iterations)
+	if (rocket->mAlive)
 	{
-		if (rocket->mAlive)
-		{
-			rocket->p += rocket->v*step;
-			rocket->p.y -= 0.5f*GRAVITATIONAL_STRENGTH*step*step;
-			rocket->v.y -= GRAVITATIONAL_STRENGTH*step;			
-			rocket->mAlive = ((rocket->mTime += step) < rocket->mLifeTime);
-			UpdateParticle(rocket);
-			rocket->mNextParticleIndex = (rocket->mNextParticleIndex > rocket->mStart + rocket->mCount - 1) ? rocket->mStart : rocket->mNextParticleIndex;
-		}
-		else if(restart)
-		{
-			ResetRocket(rocket);
-		}
-		++i;
+		rocket->p += rocket->v*step;
+		rocket->p.y -= 0.5f*GRAVITATIONAL_STRENGTH*step*step;
+		rocket->v.y -= GRAVITATIONAL_STRENGTH*step;	
+		rocket->v += rocket->a * step;
+		rocket->mAlive = ((rocket->mTime += step) < rocket->mLifeTime);
+		UpdateParticle(rocket);
+		rocket->mNextParticleIndex = (rocket->mNextParticleIndex > rocket->mStart + rocket->mCount - 1) ? rocket->mStart : rocket->mNextParticleIndex;
+	}
+	else if(restart)
+	{
+		ResetRocket(rocket);
 	}
 }
 
@@ -167,28 +123,21 @@ void UpdateFire( int rocketIndex, TTimeUnit step, bool restart /*= true*/ )
 {
 	Rocket* rocket = &(mRockets[rocketIndex]);
 
-	const int iterations = 3;
-	step /= iterations;
-	int i = 0;
-	while(i<iterations)
+	if (rocket->mAlive)
 	{
-		if (rocket->mAlive)
-		{
-			rocket->p.x = mousex ;
-			rocket->p.y = mousey;
-			rocket->mAlive = ((rocket->mTime += step) < rocket->mLifeTime);
-			UpdateFireParticle(rocket);
-			rocket->mNextParticleIndex = (rocket->mNextParticleIndex > rocket->mStart + rocket->mCount) ? rocket->mStart : rocket->mNextParticleIndex;
-		}
-		else if(restart)
-		{
-			ResetFire(rocket);
-		}
-		++i;
+		rocket->p.x = mousex ;
+		rocket->p.y = mousey;
+		rocket->mAlive = ((rocket->mTime += step) < rocket->mLifeTime);
+		UpdateFireParticle(rocket);
+		rocket->mNextParticleIndex = (rocket->mNextParticleIndex > rocket->mStart + rocket->mCount) ? rocket->mStart : rocket->mNextParticleIndex;
+	}
+	else if(restart)
+	{
+		ResetFire(rocket);
 	}
 }
 
-void Update( float dt )
+void UpdateParticles( float dt )
 {
 	for(int i = 0; i < FIRE_WORKS_LIMIT; ++i)
 		UpdateFire(i,dt,true);
@@ -227,6 +176,9 @@ void Update( float dt )
 				float theta = FLOAT(j)*6.3f/FLOAT(trails);
 				rocket->v.x = TUnit(100.f*cosf(theta));
 				rocket->v.y =  TUnit(100.f*sinf(theta));
+				rocket->a.x = rocket->v.x*5.f;
+				rocket->a.y = rocket->v.y*5.f;
+				rocket->v += rocket->a * dt;
 				rocket->mTime = 0;			
 				rocket->mColours.clear();
 				for(size_t z = 0; z < colourGradientStops.size(); ++z)
@@ -242,6 +194,8 @@ void Update( float dt )
 	{
 		UpdateRockets(i, dt, false);
 	}
+
+	UpdateParticlesColours(dt);
 }
 
 void SetupRockets()
@@ -253,4 +207,11 @@ void SetupRockets()
 void Init()
 {
 	mRockets = new Rocket[(MAX_ROCKETS+1)* EXPLOSION_TRAILS];
+}
+
+//-----------------------------------------------------------------------------
+// Release (delete) all the resources used by this program.
+void CleanUp()
+{
+	delete[] mParticles;
 }

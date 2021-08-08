@@ -12,7 +12,7 @@ CHLSLEffect::~CHLSLEffect(void)
 {
 }
 
-bool CHLSLEffect::setParameter(const char* param_name,void* param,ENUM_PARAM_TYPE P_TYPE)
+bool CHLSLEffect::SetParameter(const char* param_name,void* param,ENUM_PARAM_TYPE P_TYPE)
 {
 	if(myEffect == nullptr) return false; //FAILED if effect has not been set up
 

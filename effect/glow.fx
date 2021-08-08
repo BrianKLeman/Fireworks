@@ -327,21 +327,29 @@ OneTexelVertex ScreenQuadVS2(
 ///////////////////////////////////////////////////////////
 /////////////////////////////////// Pixel Shaders /////////
 ///////////////////////////////////////////////////////////
+float4 ret(float4 colour, float threshold)
+{
+	return colour;
+    //return float4(colour.r > threshold ? colour.r : 0.0f, colour.g > threshold ? colour.g : 0.0f, colour.b > threshold ? colour.b : 0.0f, 1.0f);
+}
 
 float4 blur9PS(NineTexelVertex IN,
-		uniform sampler2D SrcSamp) : COLOR
-{   
-    float4 OutCol = tex2D(SrcSamp, IN.UV4.zw) * KW_4;
-    OutCol += tex2D(SrcSamp, IN.UV3.zw) * KW_3;
-    OutCol += tex2D(SrcSamp, IN.UV2.zw) * KW_2;
-    OutCol += tex2D(SrcSamp, IN.UV1.zw) * KW_1;
-    OutCol += tex2D(SrcSamp, IN.UV) * KW_0;
-    OutCol += tex2D(SrcSamp, IN.UV1.xy) * KW_1;
-    OutCol += tex2D(SrcSamp, IN.UV2.xy) * KW_2;
-    OutCol += tex2D(SrcSamp, IN.UV3.xy) * KW_3;
-    OutCol += tex2D(SrcSamp, IN.UV4.xy) * KW_4;
+    uniform sampler2D SrcSamp) : COLOR
+{
+    float4 one = tex2D(SrcSamp, IN.UV4.zw) * KW_4;
+    float4 two = tex2D(SrcSamp, IN.UV3.zw) * KW_3;
+    float4 four =  tex2D(SrcSamp, IN.UV2.zw) * KW_2;
+    float4 five = tex2D(SrcSamp, IN.UV1.zw) * KW_1;
+    float4 six = tex2D(SrcSamp, IN.UV) * KW_0;
+    float4 seven = tex2D(SrcSamp, IN.UV1.xy) * KW_1;
+    float4 eight = tex2D(SrcSamp, IN.UV2.xy) * KW_2;
+    float4 nine =  tex2D(SrcSamp, IN.UV3.xy) * KW_3;
+    float4 ten =  tex2D(SrcSamp, IN.UV4.xy) * KW_4;
+    float threshold = 0.7f;
+    float4 OutCol = ret(one, threshold) + ret(two,threshold) + ret(four,threshold) + ret(five,threshold) + ret(six, threshold) + ret(seven,threshold) + ret(eight,threshold) + ret(nine, threshold) + ret(ten,threshold);
     return OutCol;
 } 
+
 
 // add glow on top of model
 
