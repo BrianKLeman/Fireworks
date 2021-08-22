@@ -176,6 +176,7 @@ void UpdateParticles( float dt )
 				float theta = FLOAT(j)*6.3f/FLOAT(trails);
 				rocket->v.x = TUnit(100.f*cosf(theta));
 				rocket->v.y =  TUnit(100.f*sinf(theta));
+				rocket->v.z = TUnit(100.f * sinf(theta));
 				rocket->a.x = rocket->v.x*5.f;
 				rocket->a.y = rocket->v.y*5.f;
 				rocket->v += rocket->a * dt;

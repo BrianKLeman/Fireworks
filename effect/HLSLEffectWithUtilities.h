@@ -20,7 +20,7 @@ struct CUSTOMVERTEX
 struct vertex_info
 {
 	int nbTriangles;
-	LPDIRECT3DVERTEXBUFFER9 l_pVertexBuffer; // Buffers to hold faces
+	LPDIRECT3DVERTEXBUFFER9 mpVertexBuffer; // Buffers to hold faces
 	
 };
 bool RenderWithEffect(vertex_info vertices_structure);

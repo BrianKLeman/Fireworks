@@ -10,10 +10,10 @@ private:
 	float mzFar = -5.f;
 	float mWidth = 800.f;
 	float mHeight = 600.f;
-	float mAspect = mHeight/mWidth;
+	float mAspect = mWidth / mHeight;
 	Transform mT;
 	Transform mLookAt;
-	bool mIsOrthographic = true;
+	bool mIsOrthographic = false;
 public:
 	Camera(Transform& t)
 		: mT(t), mLookAt(D3DXVECTOR3(0.f,0.f,0.f))

@@ -15,7 +15,7 @@ bool CHLSLEffectWithUtilities::RenderWithEffect(vertex_info vertices_structure)
 {
 		// Render the contents of the vertex buffer.
 		l_g_pd3dDevice -> SetFVF(D3DFVF_CUSTOMVERTEX2);
-		l_g_pd3dDevice -> SetStreamSource(0, vertices_structure.l_pVertexBuffer, 0, sizeof(CUSTOMVERTEX));
+		l_g_pd3dDevice -> SetStreamSource(0, vertices_structure.mpVertexBuffer, 0, sizeof(CUSTOMVERTEX));
 
 		UINT nbPasses(0);
 

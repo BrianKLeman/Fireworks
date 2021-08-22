@@ -5,8 +5,12 @@
 #define DEBUG_VS
 #define DEBUG_PS 
 #include <windows.h>
-
+//#define DIRECT3D11
+#ifndef DIRECT3D11
 #include <d3dx9.h>
+#else
+#include <d3d11.h>
+#endif
 #include <dinput.h>
 #include <memory>
 #include <DxErr.h>
@@ -40,8 +44,13 @@ protected:
 
 
 protected:
-	LPDIRECT3D9					g_pD3D = NULL; // The D3D object
-	LPDIRECT3DDEVICE9      mpD3DDevice = NULL; // The rendering device
+#ifdef DIRECT3D11
+	ID3D11DeviceContext* g_pD3D = NULL; // The D3D object
+	ID3D11Device*      mpD3DDevice = NULL; // The rendering device
+#else
+	LPDIRECT3D9 g_pD3D = NULL; // The D3D object
+	LPDIRECT3DDEVICE9 mpD3DDevice = NULL; // The rendering device
+#endif
 	LPDIRECTINPUT8			g_pDI = NULL; // The Direct Input object
 	LPDIRECTINPUTDEVICE8	g_pDIMouseDevice = NULL; // The Direct Input mouse device.
 	LPDIRECTINPUTDEVICE8 mpKeyboardDevice = NULL; // The Direct Input keyboard device.

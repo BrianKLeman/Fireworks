@@ -3,8 +3,8 @@
 #include "Camera.h"
 
 SkyBox::SkyBox(Camera camera):
-scaler(10.0),vPos(0.0,0.0,0.0),l_g_pd3dDevice(0),
-l_pVertexBuffer(0), mCamera(camera)
+scaler(1.f),vPos(0.0,0.0,-5.0f),l_g_pd3dDevice(0),
+mpVertexBuffer(0), mCamera(camera)
 {
 	D3DXMATRIX tran;
 	D3DXMatrixIdentity(&tran);
@@ -17,11 +17,6 @@ l_pVertexBuffer(0), mCamera(camera)
 	ppCompilationErrors = new LPD3DXBUFFER;
 }
 
-SkyBox::~SkyBox()
-{
-	// Release the other resources...
-    if (l_pVertexBuffer != nullptr) l_pVertexBuffer -> Release();	
-}
 
 //-----------------------------------------------------------------------------------------
 //methods
@@ -30,15 +25,20 @@ void SkyBox::init(LPDIRECT3DDEVICE9 device)
 {
 	l_g_pd3dDevice = device;
 
-	D3DXCreateSphere(l_g_pd3dDevice, 10.f, 20, 20, &m_mesh, nullptr);
-	m_mesh->GetVertexBuffer(&l_pVertexBuffer);
-	m_mesh->GetIndexBuffer(&m_IndexBuffer);
+	//D3DXLoadMeshFromX("./textures/cube.x", D3DXMESH_MANAGED, l_g_pd3dDevice, nullptr, nullptr, nullptr, nullptr, &m_mesh);
+	D3DXCreateSphere(l_g_pd3dDevice, 9.8f, 20, 20, &m_mesh, nullptr);
+	m_mesh->GetVertexBuffer(&mpVertexBuffer);
+	m_mesh->GetIndexBuffer(&mpIndexBuffer);
 
-	D3DXCreateCubeTextureFromFile(l_g_pd3dDevice, "./textures/satara_night_no_lamps_4k.hdr", &m_cubeTexture);
+	D3DXCreateCubeTextureFromFile(l_g_pd3dDevice, "./textures/nightsky.dds", &m_cubeTexture);
+	setupEffect();
+	
+
 }
 
-HRESULT SkyBox::RenderWithEffect(D3DXMATRIX g_orientation,D3DXMATRIX orientation, D3DXVECTOR3 position, FLOAT flashFactor)
+HRESULT SkyBox::RenderWithEffect()
 {
+		
 		//create worldviewproj matrix
 	    mCamera.SetFieldOfView(45.f);
 		D3DXMATRIX view = mCamera.GetViewMatrix();
@@ -46,15 +46,12 @@ HRESULT SkyBox::RenderWithEffect(D3DXMATRIX g_orientation,D3DXMATRIX orientation
 
 		//create modelworld matrix
 		D3DXMATRIX object, objectWorld;
-		D3DXMatrixIdentity(&object);
-		D3DXMatrixTranslation(&object,position.x,position.y,position.z);
-		D3DXMatrixMultiply(&object,&orientation,&object	);
-		D3DXMatrixMultiply(&objectWorld,&object,&g_orientation);
+		D3DXMatrixIdentity(&object); D3DXMatrixIdentity(&objectWorld);
 
 		D3DXMATRIX objectWorldView;
 		D3DXMatrixMultiply( &objectWorldView, &objectWorld, &view	);
 		SetObjectWorldViewTransfrom(objectWorldView);
-
+		this->l_g_pd3dDevice->SetTransform(D3DTS_PROJECTION, &proj);
 		//create ModelWorldViewProj
 		D3DXMATRIX  WorldViewProjectionMatrix;	
 		D3DXMatrixMultiply( &WorldViewProjectionMatrix, &objectWorldView, &proj);
@@ -63,9 +60,9 @@ HRESULT SkyBox::RenderWithEffect(D3DXMATRIX g_orientation,D3DXMATRIX orientation
 
 	   	// Render the contents of the vertex buffer.
 		l_g_pd3dDevice -> SetFVF(m_mesh->GetFVF());		
-	    l_g_pd3dDevice -> SetStreamSource(0, l_pVertexBuffer, 0, m_mesh->GetNumBytesPerVertex());
-		l_g_pd3dDevice->SetIndices(m_IndexBuffer);
-
+	    l_g_pd3dDevice -> SetStreamSource(0, mpVertexBuffer, 0, m_mesh->GetNumBytesPerVertex());
+		l_g_pd3dDevice->SetIndices(mpIndexBuffer);
+		l_g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		UINT nbPasses(0);	
 		SetBackground();
 		myEffect->CommitChanges();
@@ -147,4 +144,17 @@ void SkyBox::SetObjectWorldViewTransfrom( D3DXMATRIX matIn )
 void SkyBox::SetBackground()
 {
 	if (myEffect->SetTexture(m_backgroundHandle, m_cubeTexture) != D3D_OK) MessageBox(NULL, "Set cube map failed", "CubeMap", MB_OK);
+}
+
+SkyBox::~SkyBox()
+{
+	m_cubeTexture->Release(); m_cubeTexture = nullptr;
+
+	// Release the other resources...
+	if (mpVertexBuffer != nullptr) mpVertexBuffer->Release();
+
+	mpVertexBuffer = nullptr;
+	m_mesh->Release(); m_mesh = nullptr;
+	myEffect->Release(); myEffect = nullptr;
+
 }

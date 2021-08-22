@@ -37,7 +37,7 @@ public:
 	
 	HRESULT setupEffect();
 	//render geometry with effect
-	HRESULT RenderWithEffect(D3DXMATRIX g_orientation,D3DXMATRIX orientation, D3DXVECTOR3 position, FLOAT flashFactor);
+	HRESULT RenderWithEffect();
 private:
 	Camera mCamera;
 	D3DXMATRIX tranScale;
@@ -45,8 +45,8 @@ private:
 	D3DXVECTOR3 vPos;
 	LPD3DXMESH m_mesh;
 	LPDIRECT3DDEVICE9       l_g_pd3dDevice; // The rendering device
-	LPDIRECT3DVERTEXBUFFER9 l_pVertexBuffer; // Buffers to hold faces
-	LPDIRECT3DINDEXBUFFER9  m_IndexBuffer;
+	LPDIRECT3DVERTEXBUFFER9 mpVertexBuffer; // Buffers to hold faces
+	LPDIRECT3DINDEXBUFFER9  mpIndexBuffer;
 	LPDIRECT3DCUBETEXTURE9 m_cubeTexture;
 	ID3DXEffect* myEffect;				//the shader for the cube
 	LPD3DXBUFFER* ppCompilationErrors; 	//A buffer to hold the compilation errors

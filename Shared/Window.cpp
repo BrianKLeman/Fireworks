@@ -26,9 +26,20 @@ D3DWindow::D3DWindow(HINSTANCE hInst, HINSTANCE pInstance)
 HRESULT D3DWindow::SetupD3D()
 {
 	// Create the D3D object, return failure if this can't be done.
-	if (NULL == (g_pD3D = Direct3DCreate9(D3D_SDK_VERSION))) 
-		return E_FAIL;
 
+#ifdef DIRECT3D11
+	D3D_FEATURE_LEVEL featureLevel;
+	if (FAILED(
+		D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, 0, D3D11_SDK_VERSION, &mpD3DDevice, &featureLevel, &g_pD3D)
+	))
+	{
+		return S_FALSE;
+	}
+#else
+
+
+	if (NULL == (g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)))
+		return E_FAIL;
 	// Set up the structure used to create the D3DDevice
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
@@ -54,10 +65,8 @@ HRESULT D3DWindow::SetupD3D()
 	}
 
 	OnSetupD3D();
-
-	D3DVIEWPORT9 vp;
-	mpD3DDevice->GetViewport(&vp);
-	HR(mpD3DDevice->GetRenderTarget(0, &gpPrimaryRenderTarget));
+	
+#endif
 	return S_OK;
 }
 
@@ -84,7 +93,8 @@ void WINAPI D3DWindow::CleanUpDirectInput()
 		}
 
 		// Release the Direct Input Object.
-		g_pDI->Release();
+		if(g_pDI != nullptr)
+			g_pDI->Release();
 		g_pDI = NULL;
 	}
 }

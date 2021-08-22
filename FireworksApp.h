@@ -4,6 +4,7 @@
 #include "effect/HLSLEffectWithUtilities.h"
 #include "Shared/Timer.h"
 #include "GlowEffect.h"
+#include "./Shared/SkyBox.h"
 class FireworksApp :
     public D3DWindow
 {
@@ -14,11 +15,11 @@ public:
 	}
 	
 
-	static LPDIRECT3DTEXTURE9 g_pDiffuseTexture;
+	static LPDIRECT3DTEXTURE9 mpDiffuseTexture;
 	static LPD3DXSPRITE gp_sprite;
 	static FLOAT screenWidth, screenHeight;
 private:
-	D3DXVECTOR3 vCameraFW = D3DXVECTOR3(00.0f, 00.0f, -10.0f);
+	D3DXVECTOR3 vCameraFW = D3DXVECTOR3(00.0f, 00.0f, 10.0f);
 	D3DXVECTOR3 vLookatFW = D3DXVECTOR3(0.0f, 00.0f, 0.0f);
 	// Global variables
 	Camera mCamera = Camera(Transform(vCameraFW));
@@ -36,6 +37,7 @@ private:
 	FLOAT gFireWorksGlowRadius = 2.f;
 	FLOAT gFireWorksGlowStrength = 4.f;
 	GlowEffect* mpGlowEffect = nullptr;
+	SkyBox* mSkybox;
 protected:
 	bool OnSetupD3D() override;
 	void OnRender() override;
